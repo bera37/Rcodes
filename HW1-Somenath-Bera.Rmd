@@ -1,0 +1,137 @@
+---
+title: "STAT 579-Fall2014-Homework 1"
+author: "Somenath Bera"
+date: "Tuesday, September 09, 2014"
+output: html_document
+---
+#### check for github
+In this homework the task is to investigate the diamond data set. We begin by setting our working directory.
+```{r}
+setwd("C:/Users/Somenath Bera/Dropbox/Courses/STAT 579/HW1")
+```
+This data set is a part of ggplot2 package, so we will install the package. 
+
+Next we load the ggplot2 library
+```{r}
+library(ggplot2)
+```
+Call the data set
+```{r}
+data(diamonds)
+```
+Next we check if the data is loaded properly and learn its basics
+```{r}
+help(diamonds)
+head(diamonds)
+str(diamonds)
+dim(diamonds)
+
+```
+We find the data set diamonds is a data on various aspects of diamonds collected. It has data on 53,490 diamonds, about their weight (carat), quality of the cut (cut), color, clarity of diamond, total depth percentage, width of top of diamond relative to widest point, price, length, width,and depth. There are three kinds of variables here as follows:
+Numneric: carat, depth, table, x, y, z.
+Factor: cut(5 levels), color(7 levels), clarity(8 levels).
+Integer: price
+
+Aim
+
+Our aim is to find any unusual pattern in the dataset. We employ various techniques to visulaize the data to find any patterns. Our intuition tells us that higher carat, better cut and color, higher clarity, and bigger diamonds should have higher prices. Let us examine what combinations give us highest prices.
+
+Methods
+
+Summary Statistics of the data set will reveal any missing values and other information.
+```{r}
+summary(diamonds)
+```
+We find maximum diamonds are of Ideal cut, moderate color, mostly of lowest clarity. Mean price is $3933, max is $18823, and min $326. We also get idea about size of diamonds.
+
+Graphical Overviews
+
+1. Scatterplot of Carat vs Price
+```{r}
+qplot(carat, price, geom="point", data=diamonds) + geom_smooth(method="lm")
+```
+First, we observe positive relationship between carat and price. There are few points of higher carat with similar prices as lower carat diamonds. That implies probably there are other qualities that determines the price. Further, we find lines in the plot at carat 1,1.5,2,2.5, and 3. Probably, the actual carat sizes were rounded. There is range of prices of every carat and the minimum price increases with carat.
+
+Investigating for other factors that influence price; scatterplots of tips with combinations.
+
+2. Scatterplot of carat vs price by cut
+```{r}
+qplot(carat, price, geom="point", data=diamonds, colour=cut)
+```
+Generally, ideal cuts gives highest prices but not every highest price of each carat is Ideal cut.
+
+3. Scatterplot of carat vs price by clarity
+```{r}
+qplot(carat, price, geom="point", data=diamonds, colour=clarity)
+```
+For diamonds upto carat size 1.5, worst clarity gives highest prices but for higher carat sizes moderate and even lower clarity has highest prices. Hence, clarity is not an important factor to determine prices.
+
+4. Scatterplot of carat vs price by color
+```{r}
+qplot(carat, price, geom="point", data=diamonds, colour=color)
+```
+Color seems to be an important factor till carat size 1.5, later on moderate colors even worst colors has highest price.
+
+Facetting to reveal more patterns:
+
+5. Carat vs price for all cuts
+```{r}
+qplot(carat, price, geom="point", facets=.~cut,  data=diamonds)
+```
+Higher carat gives higher price, particularly with cuts like very good, premium, and ideal.
+
+6. Carat vs price with clarity-cut
+```{r}
+qplot(carat, price, geom="point", facets=clarity~cut,  data=diamonds)
+```
+All types of cut and poor clarity is a linear plot, implying only carat determines the price. The relationship changes as the clarity gets better. 
+
+7. Carat vs Price with color-cut
+```{r}
+qplot(carat, price, geom="point", facets=color~cut,  data=diamonds)
+```
+Again, everything else constant, better color gives higher price.
+
+8.  Carat vs Price with clarity-color
+```{r}
+qplot(carat, price, geom="point", facets=clarity~color,  data=diamonds)
+```
+Given color as clarity increases, price increases; but this relationship is not strong for poorer colors. Also, given clarity, price increases, as color improves.
+
+
+Creating new variable
+
+Given the fact that carat with combinations of color, clarity, and cut determines the price, it would be nice to plot price per carat against these properties.
+```{r}
+diamonds$pricepercarat <- diamonds$price/diamonds$carat
+```
+
+```{r}
+qplot(pricepercarat,data=diamonds,geom="density",fill=cut,alpha=I(.5),
+main="Price per carat with cut", xlab="Price", ylab="Density")
+```
+Extremely high prices are of Ideal cut followed by Premium cut. Mostly diamonds are of fair cut and moderately priced.
+
+```{r}
+qplot(pricepercarat,data=diamonds,geom="density",fill=clarity,alpha=I(.5),
+      main="Price per carat with clarity", xlab="Price", ylab="Density")
+```
+Majority of diamonds are moderately priced with best clarity.
+```{r}
+qplot(pricepercarat,data=diamonds,geom="density",fill=color,alpha=I(.5),
+      main="Price per carat with color", xlab="Price", ylab="Density")
+```
+All kinds of color has the same distribution.
+
+Finally, relationship between volume and weight
+```{r}
+diamonds$volume <- diamonds$x*diamonds$y*diamonds$z
+qplot(carat,volume, geom="point", data=diamonds)
+```
+Reveals a linear relationship between volume and carat.
+
+
+
+
+
+
